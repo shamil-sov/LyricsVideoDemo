@@ -2,6 +2,7 @@ using System.Runtime.InteropServices;
 using FFMpegCore;
 using FFMpegCore.Enums;
 using FFMpegCore.Extensions.Downloader;
+using Microsoft.Extensions.Configuration;
 using OpenAI.Audio;
 
 // ──────────────────────────────────────────────────────────────────────
@@ -11,30 +12,80 @@ using OpenAI.Audio;
 //  then generates an MP4 lyrics video with FFmpeg.
 //
 //  Usage:
-//    dotnet run -- <audioFilePath> <openAiApiKey>
+//    dotnet run -- <audioFilePath>
 //
 //  Example:
-//    dotnet run -- "C:\music\song.mp3" "sk-..."
+//    dotnet run -- "C:\music\song.mp3"
+//
+//  Configuration:
+//    Set your OpenAI API key in appsettings.json
 // ──────────────────────────────────────────────────────────────────────
 
-if (args.Length < 2)
+if (args.Length < 1)
 {
-    Console.WriteLine("Usage: dotnet run -- <audioFilePath> <openAiApiKey>");
-    Console.WriteLine();
-    Console.WriteLine("  audioFilePath  Path to the audio file (mp3, m4a, wav, etc.)");
-    Console.WriteLine("  openAiApiKey   Your OpenAI API key");
+    Console.Error.WriteLine("Error: No audio file specified.");
+    Console.Error.WriteLine();
+    Console.Error.WriteLine("Usage: dotnet run -- <audioFilePath>");
+    Console.Error.WriteLine();
+    Console.Error.WriteLine("  audioFilePath  Path to the audio file (mp3, m4a, wav, flac, ogg, webm)");
+    Console.Error.WriteLine();
+    Console.Error.WriteLine("Example:");
+    Console.Error.WriteLine("  dotnet run -- \"C:\\music\\song.mp3\"");
+    Console.Error.WriteLine();
+    Console.Error.WriteLine("Make sure your OpenAI API key is configured in appsettings.json");
+    return 1;
+}
+
+var configPath = Path.Combine(AppContext.BaseDirectory, "appsettings.json");
+if (!File.Exists(configPath))
+{
+    Console.Error.WriteLine("Error: appsettings.json not found.");
+    Console.Error.WriteLine();
+    Console.Error.WriteLine("Create appsettings.json in the project root with the following content:");
+    Console.Error.WriteLine();
+    Console.Error.WriteLine("  {");
+    Console.Error.WriteLine("    \"OpenAI\": {");
+    Console.Error.WriteLine("      \"ApiKey\": \"sk-your-key-here\"");
+    Console.Error.WriteLine("    }");
+    Console.Error.WriteLine("  }");
+    return 1;
+}
+
+var configuration = new ConfigurationBuilder()
+    .SetBasePath(AppContext.BaseDirectory)
+    .AddJsonFile("appsettings.json", optional: false)
+    .Build();
+
+var openAiApiKey = configuration["OpenAI:ApiKey"];
+if (string.IsNullOrWhiteSpace(openAiApiKey) || openAiApiKey == "YOUR_OPENAI_API_KEY_HERE")
+{
+    Console.Error.WriteLine("Error: OpenAI API key is not configured.");
+    Console.Error.WriteLine();
+    Console.Error.WriteLine("Open appsettings.json and replace the placeholder with your actual API key:");
+    Console.Error.WriteLine();
+    Console.Error.WriteLine("  {");
+    Console.Error.WriteLine("    \"OpenAI\": {");
+    Console.Error.WriteLine("      \"ApiKey\": \"sk-your-key-here\"");
+    Console.Error.WriteLine("    }");
+    Console.Error.WriteLine("  }");
+    Console.Error.WriteLine();
+    Console.Error.WriteLine("You can get an API key at: https://platform.openai.com/api-keys");
     return 1;
 }
 
 var audioFilePath = Path.GetFullPath(args[0]);
-var openAiApiKey = args[1];
 
 var backgroundImagePath = Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "background.png");
 backgroundImagePath = Path.GetFullPath(backgroundImagePath);
 
 if (!File.Exists(audioFilePath))
 {
-    Console.Error.WriteLine($"Audio file not found: {audioFilePath}");
+    Console.Error.WriteLine($"Error: Audio file not found: {audioFilePath}");
+    Console.Error.WriteLine();
+    Console.Error.WriteLine("Please check that:");
+    Console.Error.WriteLine("  - The file path is correct");
+    Console.Error.WriteLine("  - The file exists and is accessible");
+    Console.Error.WriteLine("  - Supported formats: mp3, m4a, wav, flac, ogg, webm");
     return 1;
 }
 

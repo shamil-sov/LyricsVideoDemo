@@ -12,13 +12,32 @@ It uses **OpenAI Whisper** to transcribe the lyrics and **FFmpeg** to render the
 
 ## Quick Start
 
+1. Clone and configure:
+
 ```bash
 git clone https://github.com/shamil-sov/LyricsVideoDemo.git
 cd LyricsVideoDemo
-dotnet run -- "path/to/song.mp3" "sk-your-openai-key"
 ```
 
-That's it. The generated `.srt` and `.mp4` files will appear in the `Output/` folder.
+2. Create `appsettings.json` in the project root with your OpenAI API key:
+
+```json
+{
+  "OpenAI": {
+    "ApiKey": "sk-your-openai-key"
+  }
+}
+```
+
+3. Run:
+
+```bash
+dotnet run -- "path/to/song.mp3"
+```
+
+The generated `.srt` and `.mp4` files will appear in the `Output/` folder.
+
+> **Note:** `appsettings.json` is git-ignored to prevent accidental key leaks.
 
 ## How It Works
 

@@ -3,3 +3,4 @@ obj/
 Output/
 *.user
 .vs/
+appsettings.json
