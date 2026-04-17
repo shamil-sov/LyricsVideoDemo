@@ -1,25 +1,47 @@
 # Lyrics Video Generator
 
-A simple CLI tool that takes a song audio file and produces a lyrics video (MP4).  
-It uses **OpenAI Whisper** to transcribe the lyrics and **FFmpeg** to render the video.
+A CLI tool that takes a song audio file and produces a lyrics video (MP4).  
+It uses **OpenAI Whisper** to transcribe the lyrics and **FFmpeg** to render the video with subtitles.
+
+---
 
 ## Prerequisites
 
-- [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0)
-- An [OpenAI API key](https://platform.openai.com/api-keys) with Whisper access
+### 1. Install .NET 8 SDK
+
+Download and install the .NET 8 SDK from the official site:
+
+**https://dotnet.microsoft.com/download/dotnet/8.0**
+
+Verify the installation by running:
+
+```bash
+dotnet --version
+```
+
+You should see a version starting with `8.x.x`.
+
+### 2. Get an OpenAI API key
+
+Sign up or log in at **https://platform.openai.com/api-keys** and create a new API key.  
+The key starts with `sk-` and is required for the Whisper transcription step.
 
 > FFmpeg is **downloaded automatically** on first run — no manual install needed.
 
-## Quick Start
+---
 
-1. Clone and configure:
+## Setup
+
+### 1. Clone the repository
 
 ```bash
 git clone https://github.com/shamil-sov/LyricsVideoDemo.git
 cd LyricsVideoDemo
 ```
 
-2. Create `appsettings.json` in the project root with your OpenAI API key:
+### 2. Configure your API key
+
+Create a file called `appsettings.json` in the project root:
 
 ```json
 {
@@ -29,24 +51,55 @@ cd LyricsVideoDemo
 }
 ```
 
-3. Run:
+Replace `sk-your-openai-key` with your actual OpenAI API key.
+
+> **Important:** `appsettings.json` is listed in `.gitignore` so your key is never committed to the repository.
+
+---
+
+## Usage
 
 ```bash
-dotnet run -- "path/to/song.mp3"
+dotnet run -- <audioFilePath>
 ```
 
-The generated `.srt` and `.mp4` files will appear in the `Output/` folder.
+### Example
 
-> **Note:** `appsettings.json` is git-ignored to prevent accidental key leaks.
+```bash
+dotnet run -- "C:\music\song.mp3"
+```
+
+### Example output
+
+```
+Step 1/3: Extracting lyrics from audio via OpenAI Whisper...
+   SRT saved to: C:\...\Output\song.srt
+Step 2/3: Ensuring FFmpeg is available...
+   FFmpeg ready.
+Step 3/3: Generating lyrics video...
+
+Done! Video saved to: C:\...\Output\song-lyrics.mp4
+```
+
+The generated files are saved in the `Output/` folder:
+
+| File | Description |
+|------|-------------|
+| `song.srt` | Time-stamped lyrics in SRT subtitle format |
+| `song-lyrics.mp4` | Final lyrics video with embedded subtitles |
+
+---
 
 ## How It Works
 
-1. **Extract lyrics** — The audio is sent to OpenAI Whisper which returns time-stamped lyrics in SRT format  
-2. **Download FFmpeg** — FFmpeg binaries are auto-downloaded and cached (one-time)  
-3. **Render video** — FFmpeg combines a background image (`background.png` included in the repo), the audio, and the SRT subtitles into an MP4
+1. **Extract lyrics** — The audio is sent to OpenAI Whisper, which returns time-stamped lyrics in SRT format
+2. **Download FFmpeg** — FFmpeg binaries are auto-downloaded and cached (one-time)
+3. **Render video** — FFmpeg combines a background image, the audio, and the SRT subtitles into an MP4 video
+
+---
 
 ## Notes
 
-- Supported audio formats: mp3, m4a, wav, etc. (anything Whisper accepts)
-- To use a different background, just replace `background.png` in the project root
-- Output video uses H.264 video + AAC audio for broad compatibility
+- **Supported audio formats:** mp3, m4a, wav, flac, ogg, webm
+- **Custom background:** Replace `background.png` in the project root to use your own image
+- **Video format:** H.264 video + AAC audio for broad compatibility
