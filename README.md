@@ -1,30 +1,33 @@
 # Lyrics Video Generator
 
-Generates a lyrics video from an audio file using OpenAI Whisper for transcription and FFmpeg for video rendering.
+A simple CLI tool that takes a song audio file and produces a lyrics video (MP4).  
+It uses **OpenAI Whisper** to transcribe the lyrics and **FFmpeg** to render the video.
 
 ## Prerequisites
 
 - [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0)
-- An [OpenAI API key](https://platform.openai.com/api-keys) (Whisper access)
+- An [OpenAI API key](https://platform.openai.com/api-keys) with Whisper access
 
-FFmpeg is downloaded automatically on first run — no manual install needed.
+> FFmpeg is **downloaded automatically** on first run — no manual install needed.
 
-## Usage
-
-```bash
-dotnet run -- <audioFilePath> <backgroundImagePath> <openAiApiKey>
-```
-
-### Example
+## Quick Start
 
 ```bash
-dotnet run -- "C:\music\song.mp3" "C:\images\background.png" "sk-your-key-here"
+git clone https://github.com/shamil-sov/LyricsVideoDemo.git
+cd LyricsVideoDemo
+dotnet run -- "path/to/song.mp3" "sk-your-openai-key"
 ```
 
-## What it does
+That's it. The generated `.srt` and `.mp4` files will appear in the `Output/` folder.
 
-1. Sends the audio to **OpenAI Whisper** and extracts lyrics as an SRT subtitle file
-2. Downloads **FFmpeg** binaries automatically (one-time, cached in temp)
-3. Generates an **MP4 video** with the background image, audio, and burned-in lyric subtitles
+## How It Works
 
-Output files (`.srt` and `.mp4`) are saved to an `Output/` folder in the project directory.
+1. **Extract lyrics** — The audio is sent to OpenAI Whisper which returns time-stamped lyrics in SRT format  
+2. **Download FFmpeg** — FFmpeg binaries are auto-downloaded and cached (one-time)  
+3. **Render video** — FFmpeg combines a background image (`background.png` included in the repo), the audio, and the SRT subtitles into an MP4
+
+## Notes
+
+- Supported audio formats: mp3, m4a, wav, etc. (anything Whisper accepts)
+- To use a different background, just replace `background.png` in the project root
+- Output video uses H.264 video + AAC audio for broad compatibility

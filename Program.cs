@@ -5,31 +5,32 @@ using FFMpegCore.Extensions.Downloader;
 using OpenAI.Audio;
 
 // ──────────────────────────────────────────────────────────────────────
-//  Lyrics Video Generator Demo
+//  Lyrics Video Generator
 //
 //  Takes an audio file, extracts lyrics as SRT via OpenAI Whisper,
 //  then generates an MP4 lyrics video with FFmpeg.
 //
 //  Usage:
-//    dotnet run -- <audioFilePath> <backgroundImagePath> <openAiApiKey>
+//    dotnet run -- <audioFilePath> <openAiApiKey>
 //
 //  Example:
-//    dotnet run -- "C:\music\song.mp3" "C:\images\bg.png" "sk-..."
+//    dotnet run -- "C:\music\song.mp3" "sk-..."
 // ──────────────────────────────────────────────────────────────────────
 
-if (args.Length < 3)
+if (args.Length < 2)
 {
-    Console.WriteLine("Usage: dotnet run -- <audioFilePath> <backgroundImagePath> <openAiApiKey>");
+    Console.WriteLine("Usage: dotnet run -- <audioFilePath> <openAiApiKey>");
     Console.WriteLine();
-    Console.WriteLine("  audioFilePath       Path to the audio file (mp3, m4a, wav, etc.)");
-    Console.WriteLine("  backgroundImagePath Path to a background image (png, jpg)");
-    Console.WriteLine("  openAiApiKey        Your OpenAI API key");
+    Console.WriteLine("  audioFilePath  Path to the audio file (mp3, m4a, wav, etc.)");
+    Console.WriteLine("  openAiApiKey   Your OpenAI API key");
     return 1;
 }
 
 var audioFilePath = Path.GetFullPath(args[0]);
-var backgroundImagePath = Path.GetFullPath(args[1]);
-var openAiApiKey = args[2];
+var openAiApiKey = args[1];
+
+var backgroundImagePath = Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "background.png");
+backgroundImagePath = Path.GetFullPath(backgroundImagePath);
 
 if (!File.Exists(audioFilePath))
 {
@@ -40,6 +41,7 @@ if (!File.Exists(audioFilePath))
 if (!File.Exists(backgroundImagePath))
 {
     Console.Error.WriteLine($"Background image not found: {backgroundImagePath}");
+    Console.Error.WriteLine("Make sure background.png is in the project root.");
     return 1;
 }
 
