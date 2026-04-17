@@ -41,7 +41,7 @@ cd LyricsVideoDemo
 
 ### 2. Configure your API key
 
-Create a file called `appsettings.json` in the project root:
+Open `appsettings.json` in the project root and replace the placeholder with your actual OpenAI API key:
 
 ```json
 {
@@ -50,8 +50,6 @@ Create a file called `appsettings.json` in the project root:
   }
 }
 ```
-
-Replace `sk-your-openai-key` with your actual OpenAI API key.
 
 > **Important:** `appsettings.json` is listed in `.gitignore` so your key is never committed to the repository.
 
